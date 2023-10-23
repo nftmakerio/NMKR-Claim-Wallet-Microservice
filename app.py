@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
-from pymongo.server_api import ServerApi
 from config import username, password, BEARER_TOKEN
 from coupon_generator import generate_multiple_coupon_codes, generate_coupon_code
 from nmkr_api import mint_and_send_random
@@ -10,7 +9,7 @@ app = Flask(__name__)
 
 uri = "mongodb+srv://" + username + ":" + password + "@nmkrwalletclaster.ztafseg.mongodb.net/?retryWrites=true&w=majority"
 
-client = MongoClient(uri, server_api=ServerApi('1'))
+client = MongoClient(uri)
 
 try:
     client.admin.command('ping')
