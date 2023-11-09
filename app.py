@@ -3,7 +3,10 @@ from pymongo import MongoClient
 from config import username, password, BEARER_TOKEN
 from coupon_generator import generate_multiple_coupon_codes, generate_coupon_code
 from nmkr_api import mint_and_send_random
-import dns
+from flask_cors import CORS, cross_origin
+app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 app = Flask(__name__)
 uri = "mongodb+srv://" + username + ":" + password + "@nmkrwalletclaster.ztafseg.mongodb.net/?retryWrites=true&w=majority"
@@ -106,6 +109,7 @@ def create_project_endpoint():
     return jsonify({"message": "Project created successfully"}), 200
 
 @app.route('/get_project/<project_id>', methods=['GET'])
+@cross_origin()
 def get_project_endpoint(project_id):
     project = get_project(project_id)
     
