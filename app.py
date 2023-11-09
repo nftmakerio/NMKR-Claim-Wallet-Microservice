@@ -3,12 +3,10 @@ from pymongo import MongoClient
 from config import username, password, BEARER_TOKEN
 from coupon_generator import generate_multiple_coupon_codes, generate_coupon_code
 from nmkr_api import mint_and_send_random
+import dns
 
 app = Flask(__name__)
-
-
 uri = "mongodb+srv://" + username + ":" + password + "@nmkrwalletclaster.ztafseg.mongodb.net/?retryWrites=true&w=majority"
-
 client = MongoClient(uri)
 
 try:
@@ -93,6 +91,43 @@ def generate_coupons():
     
     # Return the generated coupon codes in the response
     return jsonify({"coupon_codes": coupon_codes}), 200
+
+@app.route('/create_project', methods=['POST'])
+def create_project_endpoint():
+    title = request.json.get('title')
+    description = request.json.get('description')
+    image_url = request.json.get('image_url')
+    project_id = request.json.get('project_id')
+    
+    if not all([title, description, image_url, project_id]):
+        return jsonify({"message": "All fields (title, description, image_url, project_id) are required"}), 400
+
+    create_project(title, description, image_url, project_id)
+    return jsonify({"message": "Project created successfully"}), 200
+
+@app.route('/get_project/<project_id>', methods=['GET'])
+def get_project_endpoint(project_id):
+    project = get_project(project_id)
+    
+    if not project:
+        return jsonify({"message": "Project not found"}), 404
+
+    return jsonify(project), 200
+
+
+projects_collection = db.projects
+
+def create_project(title, description, image_url, project_id):
+    project = {
+        "project_id": project_id,
+        "title": title,
+        "description": description,
+        "image_url": image_url
+    }
+    projects_collection.insert_one(project)
+
+def get_project(project_id):
+    return projects_collection.find_one({"project_id": project_id}, {"_id": 0})  # Excluding the MongoDB ObjectId
 
 
 
