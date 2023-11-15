@@ -4,11 +4,11 @@ from config import username, password, BEARER_TOKEN
 from coupon_generator import generate_multiple_coupon_codes, generate_coupon_code
 from nmkr_api import mint_and_send_random
 from flask_cors import CORS, cross_origin
-app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
 
 app = Flask(__name__)
+CORS(app)
+
+
 uri = "mongodb+srv://" + username + ":" + password + "@nmkrwalletclaster.ztafseg.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(uri)
 
@@ -26,24 +26,24 @@ coupons_collection = db.coupons
 def create_coupons():
     coupon_codes = request.json.get('coupon_codes')
     project_id = request.json.get('project_id')
-    
+
     if not coupon_codes or not isinstance(coupon_codes, list) or not project_id:
         return jsonify({"message": "Invalid input"}), 400
-    
+
     # Each coupon will be associated with a project_id
     coupons = [{"code": code, "state": "unused", "project_id": project_id} for code in coupon_codes]
     coupons_collection.insert_many(coupons)
-    
+
     return jsonify({"message": "Coupons created successfully"}), 200
 
 @app.route('/use_coupon', methods=['POST'])
 def use_coupon():
     coupon_code = request.json.get('coupon_code')
     wallet_address = request.json.get('wallet_address')
-    
+
     if not coupon_code or not wallet_address:
         return jsonify({"message": "Coupon code and wallet address required"}), 400
-    
+
     # Fetch coupon to ensure it's unused and to retrieve its associated project_id
     coupon = coupons_collection.find_one({"code": coupon_code, "state": "unused"})
     if not coupon:
@@ -64,7 +64,7 @@ def use_coupon():
 @app.route('/list_coupons', methods=['GET'])
 def list_coupons():
     project_id = request.args.get('project_id')
-    
+
     # If project_id is provided, filter the coupons by project_id
     if project_id:
         coupons = list(coupons_collection.find({"project_id": project_id}))
@@ -84,14 +84,14 @@ def generate_coupons():
 
     if not num_coupons or not project_id:
         return jsonify({"message": "Number of coupons and project ID required"}), 400
-    
+
     # Generate the coupon codes
     coupon_codes = [generate_coupon_code() for _ in range(num_coupons)]
-    
+
     # Associate each coupon with a project_id
     coupons = [{"code": code, "state": "unused", "project_id": project_id} for code in coupon_codes]
     coupons_collection.insert_many(coupons)
-    
+
     # Return the generated coupon codes in the response
     return jsonify({"coupon_codes": coupon_codes}), 200
 
@@ -101,7 +101,7 @@ def create_project_endpoint():
     description = request.json.get('description')
     image_url = request.json.get('image_url')
     project_id = request.json.get('project_id')
-    
+
     if not all([title, description, image_url, project_id]):
         return jsonify({"message": "All fields (title, description, image_url, project_id) are required"}), 400
 
@@ -112,7 +112,7 @@ def create_project_endpoint():
 @cross_origin()
 def get_project_endpoint(project_id):
     project = get_project(project_id)
-    
+
     if not project:
         return jsonify({"message": "Project not found"}), 404
 
@@ -134,6 +134,5 @@ def get_project(project_id):
     return projects_collection.find_one({"project_id": project_id}, {"_id": 0})  # Excluding the MongoDB ObjectId
 
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
