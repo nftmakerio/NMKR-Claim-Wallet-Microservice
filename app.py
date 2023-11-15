@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
-from config import username, password, BEARER_TOKEN
+from config import username, password
 from coupon_generator import generate_multiple_coupon_codes, generate_coupon_code
 from nmkr_api import mint_and_send_random
 from flask_cors import CORS, cross_origin
+from datetime import timedelta
 
 app = Flask(__name__)
 CORS(app)
