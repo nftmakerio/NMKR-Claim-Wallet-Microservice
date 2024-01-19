@@ -9,7 +9,6 @@ from datetime import timedelta
 app = Flask(__name__)
 CORS(app)
 
-
 uri = "mongodb+srv://" + username + ":" + password + "@nmkrwalletclaster.ztafseg.mongodb.net/?retryWrites=true&w=majority"
 client = MongoClient(uri)
 
