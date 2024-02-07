@@ -10,8 +10,6 @@ from multiprocessing import Pool # for the multithreading
 app = Flask(__name__)
 CORS(app)
 
-OPENAI_API_KEY = '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'
-
 def create_connect_mongodb():
     uri = "mongodb+srv://" + username + ":" + password + "@nmkrwalletclaster.ztafseg.mongodb.net/?retryWrites=true&w=majority"
     client = MongoClient(uri)
