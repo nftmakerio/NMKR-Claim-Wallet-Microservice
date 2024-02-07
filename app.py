@@ -5,25 +5,31 @@ from coupon_generator import generate_multiple_coupon_codes, generate_coupon_cod
 from nmkr_api import mint_and_send_random
 from flask_cors import CORS, cross_origin
 from datetime import timedelta
+from multiprocessing import Pool # for the multithreading
 
 app = Flask(__name__)
 CORS(app)
 
-uri = "mongodb+srv://" + username + ":" + password + "@nmkrwalletclaster.ztafseg.mongodb.net/?retryWrites=true&w=majority"
-client = MongoClient(uri)
+OPENAI_API_KEY = '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'
 
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
+def create_connect_mongodb():
+    uri = "mongodb+srv://" + username + ":" + password + "@nmkrwalletclaster.ztafseg.mongodb.net/?retryWrites=true&w=majority"
+    client = MongoClient(uri)
 
-db = client.coupon_db
-coupons_collection = db.coupons
+    try:
+        client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+    except Exception as e:
+        print(e)
+
+    return client.coupon_db
 
 
 @app.route('/create_coupons', methods=['POST'])
 def create_coupons():
+    db = create_connect_mongodb()
+    coupons_collection = db.coupons
+
     coupon_codes = request.json.get('coupon_codes')
     project_id = request.json.get('project_id')
 
@@ -63,6 +69,9 @@ def use_coupon():
 
 @app.route('/list_coupons', methods=['GET'])
 def list_coupons():
+    db = create_connect_mongodb()
+    coupons_collection = db.coupons
+
     project_id = request.args.get('project_id')
 
     # If project_id is provided, filter the coupons by project_id
@@ -79,6 +88,9 @@ def list_coupons():
 
 @app.route('/generate_coupons', methods=['POST'])
 def generate_coupons():
+    db = create_connect_mongodb()
+    coupons_collection = db.coupons
+
     num_coupons = request.json.get('num_coupons')
     project_id = request.json.get('project_id')
 
@@ -119,9 +131,11 @@ def get_project_endpoint(project_id):
     return jsonify(project), 200
 
 
-projects_collection = db.projects
 
 def create_project(title, description, image_url, project_id):
+    db = create_connect_mongodb()
+    projects_collection = db.projects
+
     project = {
         "project_id": project_id,
         "title": title,
@@ -131,8 +145,73 @@ def create_project(title, description, image_url, project_id):
     projects_collection.insert_one(project)
 
 def get_project(project_id):
+    db = create_connect_mongodb()
+    projects_collection = db.projects
+
     return projects_collection.find_one({"project_id": project_id}, {"_id": 0})  # Excluding the MongoDB ObjectId
 
+
+import requests
+@app.route('/tarochi_endpoint', methods=['GET'])
+def get_tarochi():
+    BLOCKFROST_PROJECT_ID = "mainnetT0VVAzVt1QgWVVLxITkT8a4Dzn1QF6LN"
+    ADDRESS = "addr1v9glhp7wdxnfk24jq4gjjsry6st8pjk5d6q39ctn83qx8gs9aq4te"
+    SPECIFIC_ADDRESS = "addr1v9glhp7wdxnfk24jq4gjjsry6st8pjk5d6q39ctn83qx8gs9aq4te"
+
+    TRANSACTIONS_ENDPOINT = f"https://cardano-mainnet.blockfrost.io/api/v0/addresses/{ADDRESS}/transactions"
+    UTXOS_ENDPOINT = "https://cardano-mainnet.blockfrost.io/api/v0/txs/{}/utxos"
+
+    headers = {"project_id": BLOCKFROST_PROJECT_ID}
+
+    response = requests.get(TRANSACTIONS_ENDPOINT, headers=headers)
+    transactions = response.json()
+
+    transactions = sorted(transactions, key=lambda x: x["block_time"])
+
+    transactions_list = []
+    totalAmountPurchases = 0
+    totalPurchasesOver40ADA = 0
+
+    for transaction in transactions:
+        totalAmountPurchases += 1
+        tx_hash = transaction["tx_hash"]
+        block_height = transaction["block_height"]
+        block_time = transaction["block_time"]
+
+        utxos_response = requests.get(UTXOS_ENDPOINT.format(tx_hash), headers=headers)
+        utxos_data = utxos_response.json()
+
+        lovelace_received = sum(int(utxo["amount"][0]["quantity"]) for utxo in utxos_data["outputs"] if utxo["address"] == SPECIFIC_ADDRESS)
+        ada_amount = lovelace_received / 1_000_000
+
+        if ada_amount > 40:
+            totalPurchasesOver40ADA += 1
+
+        output_to_specific_address = any(output["address"] == SPECIFIC_ADDRESS for output in utxos_data["outputs"])
+        relevant_sender_addresses = set(utxo["address"] for utxo in utxos_data["inputs"] if output_to_specific_address)
+        sender_address_str = ', '.join(relevant_sender_addresses)
+
+        transactions_list.append({
+            "tx_hash": tx_hash,
+            "block_height": block_height,
+            "block_time": block_time,
+            "sender_address": sender_address_str,
+            "ada_amount": ada_amount,
+            "output_to_specific_address": output_to_specific_address
+        })
+
+    totalTransactions = len(transactions_list)
+    totalPurchasesBelow40ADA = totalTransactions - totalPurchasesOver40ADA
+
+    response_data = {
+        "transactions": transactions_list,
+        "totalAmountPurchases": totalAmountPurchases,
+        "totalPurchasesOver40ADA": totalPurchasesOver40ADA,
+        "totalTransactions": totalTransactions,
+        "totalPurchasesBelow40ADA": totalPurchasesBelow40ADA
+    }
+
+    return jsonify(response_data), 200
 
 if __name__ == '__main__':
     app.run()
