@@ -182,7 +182,7 @@ def get_tarochi():
         lovelace_received = sum(int(utxo["amount"][0]["quantity"]) for utxo in utxos_data["outputs"] if utxo["address"] == SPECIFIC_ADDRESS)
         ada_amount = lovelace_received / 1_000_000
 
-        if ada_amount > 40:
+        if ada_amount >= 40:
             totalPurchasesOver40ADA += 1
 
         output_to_specific_address = any(output["address"] == SPECIFIC_ADDRESS for output in utxos_data["outputs"])
