@@ -9,11 +9,13 @@ from datetime import datetime, timedelta
 import secrets
 from mongo_connector import create_connect_mongodb
 from email_sender import send_email
+from flask_cors import cross_origin
 
 # Create a Blueprint for the wallet-related routes
 wallet_bp = Blueprint('wallet', __name__)
 
 @wallet_bp.route('/CreateWallet', methods=['POST'])
+@cross_origin()
 def create_wallet():
     # Extract JSON body from the request
     request_data = request.get_json()
@@ -86,6 +88,7 @@ def generate_magic_link(email, coupon_code):
 
 
 @wallet_bp.route('/create_login_magic_link', methods=['POST'])
+@cross_origin()
 def create_magic_link():
     data = request.get_json()
     email = data.get('email')
