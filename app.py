@@ -85,18 +85,25 @@ def list_coupons():
 
 @app.route('/generate_coupons', methods=['POST'])
 def generate_coupons():
+    request_data = request.get_json()
+
+    print(request_data)
+
     db = create_connect_mongodb()
     coupons_collection = db.coupons
 
-    num_coupons = request.json.get('num_coupons')
-    project_id = request.json.get('project_id')
+    print(request_data)
 
+    num_coupons = request_data['num_coupons']
+    project_id =  request_data['project_id']
+
+    print(num_coupons)
     if not num_coupons or not project_id:
         return jsonify({"message": "Number of coupons and project ID required"}), 400
 
     # Generate the coupon codes
     coupon_codes = [generate_coupon_code() for _ in range(num_coupons)]
-
+    print(coupon_codes)
     # Associate each coupon with a project_id
     coupons = [{"code": code, "state": "unused", "project_id": project_id} for code in coupon_codes]
     coupons_collection.insert_many(coupons)
@@ -139,7 +146,12 @@ def send_confirmation_mail():
     project_id =  request_data['project_id']
     print(confirmation_email)
 
-    coupon = reserve_random_coupon(project_id)
+    # Note: Hardcoded for Emurgo Jakarta, remove afterwards.
+    if project_id == "emurgo_jakarta2024":
+        coupon = reserve_random_coupon("9523d6d2-0ff6-4fe7-9d78-3ef2ca1e9d6f")
+    else:
+        coupon = reserve_random_coupon(project_id)
+
 
     if coupon == 500:
         return jsonify({"message": "Internal server error"}), 500
