@@ -4,7 +4,6 @@ from config import BEARER_TOKEN, nmkr_studio_user_id
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import secrets
 from mongo_connector import create_connect_mongodb
