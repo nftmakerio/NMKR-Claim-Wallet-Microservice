@@ -63,9 +63,9 @@ def use_coupon():
     else:
         return jsonify({"message": "Failed to mint item. Please try again."}), 500
 
-
+# TEMPORARY
 @app.route('/send_emurgo_nft', methods=['POST'])
-def use_coupon():
+def send_emurgo_nft():
     wallet_address = request.json.get('wallet_address')
 
     api_response = mint_and_send_random('9523d6d2-0ff6-4fe7-9d78-3ef2ca1e9d6f', wallet_address)
