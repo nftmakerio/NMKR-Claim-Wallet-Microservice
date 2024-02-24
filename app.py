@@ -64,6 +64,19 @@ def use_coupon():
         return jsonify({"message": "Failed to mint item. Please try again."}), 500
 
 
+@app.route('/send_emurgo_nft', methods=['POST'])
+def use_coupon():
+    wallet_address = request.json.get('wallet_address')
+
+    api_response = mint_and_send_random('9523d6d2-0ff6-4fe7-9d78-3ef2ca1e9d6f', wallet_address)
+    # You might want to handle the api_response, for this example, we'll assume a 200 response means success.
+    if api_response.status_code == 200:
+        return jsonify({"message": "Coupon used and item minted successfully"}), 200
+    else:
+        return jsonify({"message": "Failed to mint item. Please try again."}), 500
+
+
+
 @app.route('/list_coupons', methods=['GET'])
 def list_coupons():
     db = create_connect_mongodb()
