@@ -7,7 +7,7 @@ def send_email(to_email, magic_link):
     msg['Subject'] = 'Your Magic Link'
     msg['From'] = 'info@nft-maker.io'
     msg['To'] = to_email
-    msg.set_content(f'Here is your magic link: {magic_link}\nIt is valid for 30 minutes.')
+    msg.set_content(f'Here is your magic link: {magic_link}\n')
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(GMAIL_USER, GMAIL_PASSWORD)
