@@ -147,11 +147,8 @@ def send_confirmation_mail():
     print(confirmation_email)
 
     # Note: Hardcoded for Emurgo Jakarta, remove afterwards.
-    if project_id == "emurgo_jakarta2024":
-        coupon = reserve_random_coupon("9523d6d2-0ff6-4fe7-9d78-3ef2ca1e9d6f")
-    else:
-        coupon = reserve_random_coupon(project_id)
-
+    coupon = reserve_random_coupon("9523d6d2-0ff6-4fe7-9d78-3ef2ca1e9d6f")
+    #coupon = reserve_random_coupon(project_id)
 
     if coupon == 500:
         return jsonify({"message": "Internal server error"}), 500
