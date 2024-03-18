@@ -13,6 +13,20 @@ from flask_cors import cross_origin
 # Create a Blueprint for the wallet-related routes
 wallet_bp = Blueprint('wallet', __name__)
 
+
+def check_if_wallet_exists(wallet_name):
+    headers = {'Authorization': 'Bearer ' + BEARER_TOKEN}
+    url = f'https://studio-api.nmkr.io/v2/ListAllWallets/{nmkr_studio_user_id}'
+    
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        wallets = response.json()
+        for wallet in wallets:
+            if wallet.get('walletName', '').lower() == wallet_name.lower():
+                return wallet.get('address')
+    return False
+
+
 @wallet_bp.route('/CreateWallet', methods=['POST'])
 @cross_origin()
 def create_wallet():
@@ -65,7 +79,7 @@ def generate_magic_link(email):
 
     return magic_link
 
-def generate_magic_link(email, coupon_code):
+def generate_magic_link_with_coupon(email, coupon_code):
     db = create_connect_mongodb()
     links_collection = db.magic_links
 
