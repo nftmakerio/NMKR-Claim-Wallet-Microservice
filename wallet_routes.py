@@ -42,9 +42,9 @@ def create_wallet():
     # TODO: Check if die codes abgelaufen sind
         
     data = {
-    'walletpassword': request_data['wallet_does_not_exist_password'],
+    'walletpassword': request_data['wallet_does_not_exist_password-2'],
     "enterpriseaddress": False,
-    "walletname": request_data['wallet_does_not_exist_email_hidden']
+    "walletname": request_data['wallet_does_not_exist_email_hidden-2']
     }
 
     print(data)
