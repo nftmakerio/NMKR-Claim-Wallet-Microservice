@@ -36,13 +36,15 @@ def create_wallet():
     print(request_data)
 
     # Check if necessary data is present
-    if not request_data or 'walletpassword' not in request_data:
+    if not request_data or 'wallet_does_not_exist_password' not in request_data:
         abort(400, description="Missing wallet password")
 
+    # TODO: Check if die codes abgelaufen sind
+        
     data = {
-    'walletpassword': request_data['walletpassword'],
+    'walletpassword': request_data['wallet_does_not_exist_password'],
     "enterpriseaddress": False,
-    "walletname": request_data['email']
+    "walletname": request_data['wallet_does_not_exist_email_hidden']
     }
 
     print(data)
@@ -59,13 +61,13 @@ def create_wallet():
     return response.json()
 
 
-def generate_magic_link(email):
+def generate_magic_link(email, does_wallet_exist):
     db = create_connect_mongodb()
     links_collection = db.magic_links
 
     # Generate a unique code
     unique_code = secrets.token_urlsafe(16)
-    expiry_time = datetime.now() + timedelta(minutes=60)
+    expiry_time = datetime.now() + timedelta(minutes=6000)
 
     # Insert the code into MongoDB with an expiry time
     link_id = links_collection.insert_one({
@@ -75,7 +77,7 @@ def generate_magic_link(email):
     }).inserted_id
 
     # Construct the magic link
-    magic_link = f'https://nmkr.io/wallet?code={unique_code}&id={link_id}'
+    magic_link = f'https://nmkr.io/wallet?code={unique_code}&id={link_id}&does_wallet_exist={does_wallet_exist}&email={email}'
 
     return magic_link
 
@@ -108,7 +110,13 @@ def create_magic_link():
     if not email:
         return jsonify({'error': 'Email is required'}), 400
 
-    magic_link = generate_magic_link(email)
+    does_wallet_exist = check_if_wallet_exists(email)
+
+    if does_wallet_exist:
+        magic_link = generate_magic_link(email, True)
+    else:
+        magic_link = generate_magic_link(email, False)
+
     print(magic_link)
     send_email(email, magic_link)
 
