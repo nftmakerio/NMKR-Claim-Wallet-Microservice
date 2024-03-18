@@ -51,11 +51,12 @@ def create_wallet():
     )
 
     print(response)
+    json_res = response.json()
 
     # TODO: Send Passphrase here via email response['seedPhrase']
 
     # Return the mock response
-    return redirect("https://www.nmkr.io/wallet/details?address=" + response['address'], code=302)
+    return redirect("https://www.nmkr.io/wallet/details?address=" + json_res['address'], code=302)
 
 
 def generate_magic_link(email, does_wallet_exist):
