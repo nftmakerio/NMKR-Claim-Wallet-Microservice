@@ -30,21 +30,16 @@ def check_if_wallet_exists(wallet_name):
 @wallet_bp.route('/CreateWallet', methods=['POST'])
 @cross_origin()
 def create_wallet():
-    # Extract JSON body from the request
-    request_data = request.get_json()
-
-    print(request_data)
-
     # Check if necessary data is present
-    if not request_data or 'wallet_does_not_exist_password' not in request_data:
+    if not request.form['wallet_does_not_exist_password']:
         abort(400, description="Missing wallet password")
 
     # TODO: Check if die codes abgelaufen sind
         
     data = {
-    'walletpassword': request_data['wallet_does_not_exist_password'],
+    'walletpassword': request.form['wallet_does_not_exist_password'],
     "enterpriseaddress": False,
-    "walletname": request_data['wallet_does_not_exist_email_hidden']
+    "walletname": request.form['wallet_does_not_exist_email_hidden']
     }
 
     print(data)
