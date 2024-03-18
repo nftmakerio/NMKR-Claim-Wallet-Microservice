@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, request, jsonify, abort, redirect
 import requests
 from config import BEARER_TOKEN, nmkr_studio_user_id   
 from flask import Flask, request, jsonify
@@ -52,8 +52,10 @@ def create_wallet():
 
     print(response)
 
+    # TODO: Send Passphrase here via email response['seedPhrase']
+
     # Return the mock response
-    return response.json()
+    return redirect("https://www.nmkr.io/wallet/details?address=" + response['address'], code=302)
 
 
 def generate_magic_link(email, does_wallet_exist):
@@ -72,7 +74,7 @@ def generate_magic_link(email, does_wallet_exist):
     }).inserted_id
 
     # Construct the magic link
-    magic_link = f'https://nmkr.io/wallet?code={unique_code}&id={link_id}&does_wallet_exist={does_wallet_exist}&email={email}'
+    magic_link = f'https://nmkr.io/wallet/signup?code={unique_code}&id={link_id}&does_wallet_exist={does_wallet_exist}&email={email}'
 
     return magic_link
 
@@ -92,7 +94,7 @@ def generate_magic_link_with_coupon(email, coupon_code):
     }).inserted_id
 
     # Construct the magic link
-    magic_link = f'https://nmkr.io/wallet?code={unique_code}&id={link_id}&coupon={coupon_code}&email={email}'
+    magic_link = f'https://nmkr.io/wallet/signup?code={unique_code}&id={link_id}&coupon={coupon_code}&email={email}'
 
     return magic_link
 
