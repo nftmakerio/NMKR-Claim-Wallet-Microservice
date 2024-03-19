@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 from pymongo import MongoClient, ReturnDocument
 from config import username, password
 from coupon_generator import generate_multiple_coupon_codes, generate_coupon_code
@@ -10,7 +10,7 @@ from wallet_routes import wallet_bp  # Import the Blueprint
 from mongo_connector import create_connect_mongodb
 import random
 from email_sender import send_email
-from wallet_routes import generate_magic_link
+from wallet_routes import generate_magic_link, generate_magic_link_with_coupon
 
 app = Flask(__name__)
 
@@ -151,12 +151,9 @@ def get_project_endpoint(project_id):
 @cross_origin()
 def send_confirmation_mail():
     # Extract JSON body from the request
-    request_data = request.get_json()
 
-    print(request_data)
-
-    confirmation_email = request_data['confirmation_mail']
-    project_id =  request_data['project_id']
+    confirmation_email = request.form['confirmation_mail']
+    #project_id =  request.form['project_id']
     print(confirmation_email)
 
     # Note: Hardcoded for Emurgo Jakarta, remove afterwards.
@@ -168,12 +165,12 @@ def send_confirmation_mail():
     
     print(coupon)
 
-    magic_link = generate_magic_link(confirmation_email, coupon)
+    magic_link = generate_magic_link_with_coupon(confirmation_email, coupon)
 
     # Send the email
     send_email(confirmation_email, magic_link)
 
-    return jsonify({"message": "Email sent successfully"}), 200
+    return redirect("https://www.nmkr.io/claim")
 
 def reserve_random_coupon(project_id):
     db = create_connect_mongodb()
