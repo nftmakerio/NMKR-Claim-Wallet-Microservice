@@ -83,6 +83,10 @@ def generate_magic_link_with_coupon(email, coupon_code):
     db = create_connect_mongodb()
     links_collection = db.magic_links
     does_wallet_exist = check_if_wallet_exists(email)
+    does_wallet_exist_bool = False
+
+    if does_wallet_exist:
+        does_wallet_exist_bool = True
 
     # Generate a unique code
     unique_code = secrets.token_urlsafe(16)
@@ -96,7 +100,7 @@ def generate_magic_link_with_coupon(email, coupon_code):
     }).inserted_id
 
     # Construct the magic link
-    magic_link = f'https://nmkr.io/wallet/signup?code={unique_code}&id={link_id}&does_wallet_exist={does_wallet_exist}&email={email}&coupon={coupon_code}'
+    magic_link = f'https://nmkr.io/wallet/signup?code={unique_code}&id={link_id}&does_wallet_exist={does_wallet_exist_bool}&email={email}&coupon={coupon_code}'
 
     return magic_link
 

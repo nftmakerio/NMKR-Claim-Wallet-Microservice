@@ -153,7 +153,7 @@ def send_confirmation_mail():
     # Extract JSON body from the request
 
     confirmation_email = request.form['confirmation_mail']
-    #project_id =  request.form['project_id']
+    #project_id =  request.form['project_id'] #TODO  Project ID implementieren
     print(confirmation_email)
 
     # Note: Hardcoded for Emurgo Jakarta, remove afterwards.
@@ -170,7 +170,7 @@ def send_confirmation_mail():
     # Send the email
     send_email(confirmation_email, magic_link)
 
-    return redirect("https://www.nmkr.io/claim")
+    return redirect("https://www.nmkr.io/claim?success=true")
 
 def reserve_random_coupon(project_id):
     db = create_connect_mongodb()
