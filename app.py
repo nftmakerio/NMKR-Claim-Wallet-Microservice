@@ -170,7 +170,7 @@ def send_confirmation_mail():
     # Send the email
     send_email(confirmation_email, magic_link)
 
-    return redirect("https://www.nmkr.io/success")
+    return redirect("https://www.nmkr.io/claim-success")
 
 def reserve_random_coupon(project_id):
     db = create_connect_mongodb()
