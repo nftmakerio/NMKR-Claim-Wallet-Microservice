@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 
 def send_email(to_email, magic_link):
     msg = MIMEMultipart()
-    msg['Subject'] = 'Your Magic Link'
+    msg['Subject'] = 'Please confirm your email address'
     msg['From'] = 'noreply@nmkr.io'
     msg['To'] = to_email
     
