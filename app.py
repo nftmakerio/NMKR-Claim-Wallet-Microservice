@@ -11,6 +11,7 @@ from mongo_connector import create_connect_mongodb
 import random
 from email_sender import send_email
 from wallet_routes import generate_magic_link, generate_magic_link_with_coupon
+import requests
 
 app = Flask(__name__)
 
@@ -152,6 +153,18 @@ def get_project_endpoint(project_id):
 @cross_origin()
 def mintandsend():
     # TODO-Mint here
+    url = "https://onboarding.click/api/claim/v1/01hse90y4v0n1kvze59baqfeh3"
+    payload = {
+        "Code": "07901b55-02f9-4540-8b7e-5018110f69af"
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    print(response.text)
+
     return redirect("https://www.nmkr.io/mint-success")
 
 
@@ -182,6 +195,18 @@ def send_confirmation_mail():
         email_template = "existing_wallet"
     else:
         magic_link = generate_magic_link_with_coupon(confirmation_email, coupon)
+        url = "https://onboarding.click/api/claim/v1/01hse90y4v0n1kvze59baqfeh3"
+        payload = {
+            "Code": "07901b55-02f9-4540-8b7e-5018110f69af"
+        }
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+
+        print(response.text)
+
 
     # Send the email
     send_email(confirmation_email, magic_link, email_template)
