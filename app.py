@@ -155,7 +155,8 @@ def mintandsend():
     # TODO-Mint here
     url = "https://onboarding.click/api/claim/v1/01hse90y4v0n1kvze59baqfeh3"
     payload = {
-        "Code": "07901b55-02f9-4540-8b7e-5018110f69af"
+        "code": "07901b55-02f9-4540-8b7e-5018110f69af",
+        "address": request.args.get('wallet_address')
     }
     headers = {
         "Content-Type": "application/json"
@@ -197,7 +198,8 @@ def send_confirmation_mail():
         magic_link = generate_magic_link_with_coupon(confirmation_email, coupon)
         url = "https://onboarding.click/api/claim/v1/01hse90y4v0n1kvze59baqfeh3"
         payload = {
-            "Code": "07901b55-02f9-4540-8b7e-5018110f69af"
+            "code": "07901b55-02f9-4540-8b7e-5018110f69af",
+            "address": cardano_wallet_address
         }
         headers = {
             "Content-Type": "application/json"
