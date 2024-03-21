@@ -10,7 +10,7 @@ from wallet_routes import wallet_bp  # Import the Blueprint
 from mongo_connector import create_connect_mongodb
 import random
 from email_sender import send_email
-from wallet_routes import generate_magic_link, generate_magic_link_with_coupon, generate_magic_link_existing_wallet_with_coupon
+from wallet_routes import generate_magic_link, generate_magic_link_with_coupon
 
 app = Flask(__name__)
 
