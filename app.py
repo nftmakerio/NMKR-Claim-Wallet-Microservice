@@ -147,6 +147,14 @@ def get_project_endpoint(project_id):
 
     return jsonify(project), 200
 
+
+@app.route('/mintandsend', methods=['GET'])
+@cross_origin()
+def mintandsend():
+    # TODO-Mint here
+    return redirect("https://www.nmkr.io/mint-success")
+
+
 @app.route('/send_confirmation_mail', methods=['POST'])
 @cross_origin()
 def send_confirmation_mail():
