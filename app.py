@@ -161,7 +161,7 @@ def send_confirmation_mail():
     # Extract JSON body from the request
 
     confirmation_email = request.form['confirmation_mail']
-    cardano_wallet_address = request.form['cardano_address-2']
+    cardano_wallet_address = request.form['cardano_address-3']
 
     #project_id =  request.form['project_id'] #TODO  Project ID implementieren
     print(confirmation_email)
