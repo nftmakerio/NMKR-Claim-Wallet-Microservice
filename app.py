@@ -167,13 +167,16 @@ def send_confirmation_mail():
     
     print(coupon)
 
+    email_template = "verify_mail"
+
     if (cardano_wallet_address != ""):
         magic_link = f'https://padierfind.pythonanywhere.com/mintandsend?code=' + coupon + '&wallet_address=' + cardano_wallet_address
+        email_template = "existing_wallet"
     else:
         magic_link = generate_magic_link_with_coupon(confirmation_email, coupon)
 
     # Send the email
-    send_email(confirmation_email, magic_link)
+    send_email(confirmation_email, magic_link, email_template)
 
     return redirect("https://www.nmkr.io/claim-success")
 
