@@ -4,15 +4,21 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-def send_email(to_email, magic_link):
+def send_email(to_email, magic_link, template):
     msg = MIMEMultipart()
-    msg['Subject'] = 'Please confirm your email address'
+    msg['Subject'] = 'Confirm your email address'
     msg['From'] = 'noreply@nmkr.io'
     msg['To'] = to_email
     
-    # Load HTML content from a file
-    with open('verify_mail.html', 'r') as file:
-        html_content = file.read().replace("{magic_link}", magic_link)
+    if template == "verify_mail":
+        # Load HTML content from a file
+        with open('verify_mail.html', 'r') as file:
+            html_content = file.read().replace("{magic_link}", magic_link)
+    elif template == 'existing_wallet':
+        # Load HTML content from a file
+        with open('verify_mail_existing_wallet', 'r') as file:
+            html_content = file.read().replace("{magic_link}", magic_link)
+
     
     msg.attach(MIMEText(html_content, "html"))
 

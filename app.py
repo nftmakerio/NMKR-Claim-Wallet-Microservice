@@ -10,7 +10,7 @@ from wallet_routes import wallet_bp  # Import the Blueprint
 from mongo_connector import create_connect_mongodb
 import random
 from email_sender import send_email
-from wallet_routes import generate_magic_link, generate_magic_link_with_coupon
+from wallet_routes import generate_magic_link, generate_magic_link_with_coupon, generate_magic_link_existing_wallet_with_coupon
 
 app = Flask(__name__)
 
@@ -153,6 +153,8 @@ def send_confirmation_mail():
     # Extract JSON body from the request
 
     confirmation_email = request.form['confirmation_mail']
+    cardano_wallet_address = request.form['cardano_address-3']
+
     #project_id =  request.form['project_id'] #TODO  Project ID implementieren
     print(confirmation_email)
 
@@ -165,7 +167,10 @@ def send_confirmation_mail():
     
     print(coupon)
 
-    magic_link = generate_magic_link_with_coupon(confirmation_email, coupon)
+    if (cardano_wallet_address != ""):
+        magic_link = f'https://padierfind.pythonanywhere.com/mintandsend?code=' + coupon + '&wallet_address=' + cardano_wallet_address
+    else:
+        magic_link = generate_magic_link_with_coupon(confirmation_email, coupon)
 
     # Send the email
     send_email(confirmation_email, magic_link)
