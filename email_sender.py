@@ -16,7 +16,7 @@ def send_email(to_email, magic_link, template):
             html_content = file.read().replace("{magic_link}", magic_link)
     elif template == 'existing_wallet':
         # Load HTML content from a file
-        with open('verify_mail_existing_wallet', 'r') as file:
+        with open('verify_mail_existing_wallet.html', 'r') as file:
             html_content = file.read().replace("{magic_link}", magic_link)
 
     
