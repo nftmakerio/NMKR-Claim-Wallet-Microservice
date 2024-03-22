@@ -196,19 +196,6 @@ def send_confirmation_mail():
         email_template = "existing_wallet"
     else:
         magic_link = generate_magic_link_with_coupon(confirmation_email, coupon)
-        url = "https://onboarding.click/api/claim/v1/01hse90y4v0n1kvze59baqfeh3"
-        payload = {
-            "code": "07901b55-02f9-4540-8b7e-5018110f69af",
-            "address": cardano_wallet_address
-        }
-        headers = {
-            "Content-Type": "application/json"
-        }
-
-        response = requests.post(url, json=payload, headers=headers)
-
-        print(response.text)
-
 
     # Send the email
     send_email(confirmation_email, magic_link, email_template)

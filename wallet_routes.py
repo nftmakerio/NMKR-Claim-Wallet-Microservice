@@ -55,6 +55,22 @@ def create_wallet():
 
     # TODO: Send Passphrase here via email response['seedPhrase']
 
+    #TODO: REMOVE THIS
+    wallet_address = json_res['address']
+    url = "https://onboarding.click/api/claim/v1/01hse90y4v0n1kvze59baqfeh3"
+    payload = {
+        "code": "07901b55-02f9-4540-8b7e-5018110f69af",
+        "address": wallet_address
+    }
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    print(response.text)
+
+
     # Return the mock response
     return redirect("https://www.nmkr.io/wallet/details?address=" + json_res['address'], code=302)
 
